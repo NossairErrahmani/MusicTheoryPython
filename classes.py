@@ -84,7 +84,7 @@ class mode:
             self.gamme.append(note)
 
         return self.gamme
-def progression(a,b,c,d): #gotta implement maj/min
+def progression(a,b,c,d): #gotta implement flats & sharps
     arguments=locals()
     min=[j for i,j in arguments.items() if str.islower(j)]
     maj=[j for i,j in arguments.items() if str.isupper(j)]
