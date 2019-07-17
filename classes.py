@@ -175,6 +175,7 @@ def playnote(note, time=1, oct=0):
 
     p.terminate()
 
+
 def playchord(chord,nature='major',time=1):
     chordtoplay=[]
     if str.lower(nature).__contains__('maj'):
