@@ -116,9 +116,21 @@ class mode:
 
         return self.gamme
 
+def ismajor(chord):
+    if chord[1] in major(chord[0]):
+        return True
+    else:
+        return False
+def isminor(chord):
+    if chord[1] in minor(chord[0]):
+        return True
+    else:
+        return False
+
 
 def progression(a, b, c, d):  # gotta implement maj/min
     arguments = locals()
+    chordstoplay=[]
     min = [j for i, j in arguments.items() if str.islower(j)]
     maj = [j for i, j in arguments.items() if str.isupper(j)]
     notes = mode().ionian('c')
@@ -126,18 +138,21 @@ def progression(a, b, c, d):  # gotta implement maj/min
     for j in reversed(list(arguments.values())):
         print(j)
         if j in min:
+            chordstoplay.append(minor(notes[romans[j] - 1]))
             print(minor(notes[romans[j] - 1]))
         if j in maj:
+            chordstoplay.append(major(notes[romans[str.lower(j)] - 1]))
             print(major(notes[romans[str.lower(j)] - 1]))
+    return chordstoplay
 
 
-def play(note, time=1):
+def playnote(note, time=1, oct=0):
     p = pyaudio.PyAudio()
 
     volume = 0.5  # range [0.0, 1.0]
     fs = 44100  # sampling rate, Hz, must be integer
     duration = float(time)  # in seconds, may be float
-    f = freq[str(note)]  # sine frequency, Hz, may be float
+    f = (freq[str(note)])*(1+oct)  # sine frequency, Hz, may be float
 
     # generate samples, note conversion to float32 array
     samples = (np.sin(2 * np.pi * np.arange(fs * duration) * f / fs)).astype(np.float32)
@@ -155,3 +170,20 @@ def play(note, time=1):
     stream.close()
 
     p.terminate()
+
+def playchord(chord,nature='major',time=1):
+    chordtoplay=[]
+    if str.lower(nature).__contains__('maj'):
+        chordtoplay=major(chord)
+    if str.lower(nature).__contains__('min'):
+        chordtoplay=minor(chord)
+    if str.lower(nature).__contains__('sev'):
+        chordtoplay=seventh(chordtoplay)
+    for i in range(len(chordtoplay)):
+        if i==0:
+            playnote(chordtoplay[i])
+        else:
+            if notes.index(chordtoplay[i]) < notes.index(chordtoplay[i - 1]):
+                playnote(chordtoplay[i], oct=1)
+            else:
+                playnote(chordtoplay[i])
