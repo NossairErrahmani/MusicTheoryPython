@@ -1,9 +1,9 @@
 import pyaudio
 import numpy as np
 
-notes = ['a', 'a#', 'b','c', 'c#', 'd', 'd#', 'e', 'f', 'f#', 'g', 'g#']
-freq = {'a': 440, 'a#': 466.16, 'b': 493.88, 'c': 523.25, 'c#': 554.37, 'd': 587.33, 'd#': 622.25, 'e': 659.25,
-        'f': 698.46, 'f#': 739.99, 'g': 783.99, 'g#': 830.61, }
+notes = ['f', 'f#', 'g', 'g#','a', 'a#', 'b','c', 'c#', 'd', 'd#', 'e']
+rom=['i','ii','iii','iv','v','vi','vii']
+freq = {'f': 698.46/2, 'f#': 739.99/2, 'g': 783.99/2, 'g#': 830.61/2,'a': 440, 'a#': 466.16, 'b': 493.88, 'c': 523.25, 'c#': 554.37, 'd': 587.33, 'd#': 622.25, 'e': 659.25}
 intervals = [2, 2, 1, 2, 2, 2, 1]
 romans = {'i': 1, 'ii': 2, 'iii': 3, 'iv': 4, 'v': 5, 'vi': 6, 'vii': 7}
 
@@ -133,16 +133,19 @@ def progression(a, b, c, d):  # gotta implement maj/min
     chordstoplay=[]
     min = [j for i, j in arguments.items() if str.islower(j)]
     maj = [j for i, j in arguments.items() if str.isupper(j)]
-    notes = mode().ionian('c')
+    gamma = mode().ionian('c')
     chords = []
     for j in reversed(list(arguments.values())):
-        print(j)
-        if j in min:
-            chordstoplay.append(minor(notes[romans[j] - 1]))
-            print(minor(notes[romans[j] - 1]))
-        if j in maj:
-            chordstoplay.append(major(notes[romans[str.lower(j)] - 1]))
-            print(major(notes[romans[str.lower(j)] - 1]))
+        if str.islower(j):
+            if j in romans:
+                chordstoplay.append(minor(gamma[romans[j] - 1]))
+            if j in notes:
+                chordstoplay.append(minor(j))
+        if str.isupper(j):
+            if str.lower(j) in romans:
+                chordstoplay.append(major(gamma[romans[str.lower(j)] - 1]))
+            if str.lower(j) in notes:
+                chordstoplay.append(major(str.lower(j)))
     return chordstoplay
 
 
@@ -184,7 +187,7 @@ def playchord(chord,nature='major',time=1):
     octave=0
     for i in range(len(chordtoplay)):
         print(chordtoplay[i])
-        if notes.index(chordtoplay[i])<ind:
+        if notes.index(chordtoplay[i])<ind: #to keep the notes moving up
             octave=1
         playnote(chordtoplay[i], oct=octave)
         ind=notes.index(chordtoplay[i])
