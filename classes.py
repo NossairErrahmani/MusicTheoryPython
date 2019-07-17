@@ -38,10 +38,12 @@ def majorseventh(chord):
 
 def diminished(chord):
     chord[2] = notes(notes.index(chord[2]) - 1)
+    return chord
 
 
 def augmented(chord):
     chord[2] = notes(notes.index(chord[2]) + 1)
+    return chord
 
 
 class mode:
@@ -137,12 +139,12 @@ def progression(a, b, c, d):  # gotta implement maj/min
     chords = []
     for j in reversed(list(arguments.values())):
         if str.islower(j):
-            if j in romans:
+            if j in rom:
                 chordstoplay.append(minor(gamma[romans[j] - 1]))
             if j in notes:
                 chordstoplay.append(minor(j))
         if str.isupper(j):
-            if str.lower(j) in romans:
+            if str.lower(j) in rom:
                 chordstoplay.append(major(gamma[romans[str.lower(j)] - 1]))
             if str.lower(j) in notes:
                 chordstoplay.append(major(str.lower(j)))
