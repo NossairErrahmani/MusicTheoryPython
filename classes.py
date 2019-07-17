@@ -197,4 +197,7 @@ def playchord(chord,times=1,nature='major',fourth=0):
 def playprogression(*args):
     f=args[0]
     for v in args[1:]:
-        playchord(v,1,f)
+        if str.isupper(v):
+            playchord(v,1,nature='major',fourth=f)
+        if str.islower(v):
+            playchord(v,1,nature='minor',fourth=f)
