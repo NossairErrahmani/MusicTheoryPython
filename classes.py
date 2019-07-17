@@ -1,6 +1,17 @@
+import pyaudio
+import numpy as np
+
 notes = ['c', 'c#', 'd', 'd#', 'e', 'f', 'f#', 'g', 'g#', 'a', 'a#', 'b']
+freq = {'a': 440, 'a#': 466.16, 'b': 493.88, 'c': 523.25, 'c#': 554.37, 'd': 587.33, 'd#': 622.25, 'e': 659.25,
+        'f': 698.46, 'f#': 739.99, 'g': 783.99, 'g#': 830.61, }
 intervals = [2, 2, 1, 2, 2, 2, 1]
 romans = {'i': 1, 'ii': 2, 'iii': 3, 'iv': 4, 'v': 5, 'vi': 6, 'vii': 7}
+
+
+class note:
+    def __init__(self, name):
+        self.name = str(name)
+        self.frequence = freq[self.name]
 
 
 def powerchord(note):
@@ -106,7 +117,7 @@ class mode:
         return self.gamme
 
 
-def progression(a, b, c, d):  # gotta implement flat/sharp
+def progression(a, b, c, d):  # gotta implement maj/min
     arguments = locals()
     min = [j for i, j in arguments.items() if str.islower(j)]
     maj = [j for i, j in arguments.items() if str.isupper(j)]
@@ -118,3 +129,29 @@ def progression(a, b, c, d):  # gotta implement flat/sharp
             print(minor(notes[romans[j] - 1]))
         if j in maj:
             print(major(notes[romans[str.lower(j)] - 1]))
+
+
+def play(note, time=1):
+    p = pyaudio.PyAudio()
+
+    volume = 0.5  # range [0.0, 1.0]
+    fs = 44100  # sampling rate, Hz, must be integer
+    duration = float(time)  # in seconds, may be float
+    f = freq[str(note)]  # sine frequency, Hz, may be float
+
+    # generate samples, note conversion to float32 array
+    samples = (np.sin(2 * np.pi * np.arange(fs * duration) * f / fs)).astype(np.float32)
+
+    # for paFloat32 sample values must be in range [-1.0, 1.0]
+    stream = p.open(format=pyaudio.paFloat32,
+                    channels=1,
+                    rate=fs,
+                    output=True)
+
+    # play. May repeat with different volume values (if done interactively)
+    stream.write(volume * samples)
+
+    stream.stop_stream()
+    stream.close()
+
+    p.terminate()
