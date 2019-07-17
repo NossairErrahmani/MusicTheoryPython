@@ -149,14 +149,14 @@ def progression(a, b, c, d):  # gotta implement maj/min
     return chordstoplay
 
 
-def playnote(note, time=1, oct=0):
+def playnote(note, time=1, oct=0): #taken from https://stackoverflow.com/questions/8299303/generating-sine-wave-sound-in-python?fbclid=IwAR2uEmbFYe5TgwHuI8UooLbnhdLumdap7lQF_0mwF_J-O6ZJRkPo-Sbjvkc
     p = pyaudio.PyAudio()
     print(note)
 
     volume = 0.5  # range [0.0, 1.0]
     fs = 44100  # sampling rate, Hz, must be integer
     duration = float(time)  # in seconds, may be float
-    f = (freq[str(note)])*(1+oct)  # sine frequency, Hz, may be float
+    f = (freq[str(note)])*(1+oct)  # sine frequency, Hz, may be float #possibility of playing it an octave higher
 
     # generate samples, note conversion to float32 array
     samples = (np.sin(2 * np.pi * np.arange(fs * duration) * f / fs)).astype(np.float32)
@@ -176,12 +176,14 @@ def playnote(note, time=1, oct=0):
     p.terminate()
 
 
-def playchord(chord,times=1):
+def playchord(chord,times=1,nature='major',fourth=0):
     chordtoplay=[]
-    if str.isupper(chord):
+    if str.__contains__(str.lower(nature),'maj'):
         chordtoplay=major(str.lower(chord))
-    if str.islower(chord):
+    if str.__contains__(str.lower(nature),'min'):
         chordtoplay=minor(chord)
+    if fourth: #adding the root on top
+        chordtoplay.append(chordtoplay[0])
     ind=-1
     for k in range (times):
         octave = 0
@@ -193,5 +195,6 @@ def playchord(chord,times=1):
             ind=notes.index(chordtoplay[i])
 
 def playprogression(*args):
-    for v in args:
-        playchord(v)
+    f=args[0]
+    for v in args[1:]:
+        playchord(v,1,f)
