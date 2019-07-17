@@ -1,7 +1,7 @@
 import pyaudio
 import numpy as np
 
-notes = ['c', 'c#', 'd', 'd#', 'e', 'f', 'f#', 'g', 'g#', 'a', 'a#', 'b']
+notes = ['a', 'a#', 'b','c', 'c#', 'd', 'd#', 'e', 'f', 'f#', 'g', 'g#']
 freq = {'a': 440, 'a#': 466.16, 'b': 493.88, 'c': 523.25, 'c#': 554.37, 'd': 587.33, 'd#': 622.25, 'e': 659.25,
         'f': 698.46, 'f#': 739.99, 'g': 783.99, 'g#': 830.61, }
 intervals = [2, 2, 1, 2, 2, 2, 1]
@@ -179,11 +179,11 @@ def playchord(chord,nature='major',time=1):
         chordtoplay=minor(chord)
     if str.lower(nature).__contains__('sev'):
         chordtoplay=seventh(chordtoplay)
+    ind=-1
+    octave=0
     for i in range(len(chordtoplay)):
-        if i==0:
-            playnote(chordtoplay[i])
-        else:
-            if notes.index(chordtoplay[i]) < notes.index(chordtoplay[i - 1]):
-                playnote(chordtoplay[i], oct=1)
-            else:
-                playnote(chordtoplay[i])
+        print(chordtoplay[i])
+        if notes.index(chordtoplay[i])<ind:
+            octave=1
+        playnote(chordtoplay[i], oct=octave)
+        ind=notes.index(chordtoplay[i])
