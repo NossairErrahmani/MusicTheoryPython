@@ -148,6 +148,7 @@ def progression(a, b, c, d):  # gotta implement maj/min
 
 def playnote(note, time=1, oct=0):
     p = pyaudio.PyAudio()
+    print(note)
 
     volume = 0.5  # range [0.0, 1.0]
     fs = 44100  # sampling rate, Hz, must be integer
