@@ -3,7 +3,7 @@ import numpy as np
 
 notes = ['f', 'f#', 'g', 'g#','a', 'a#', 'b','c', 'c#', 'd', 'd#', 'e']
 rom=['i','ii','iii','iv','v','vi','vii']
-freq = {'f': 698.46/2, 'f#': 739.99/2, 'g': 783.99/2, 'g#': 830.61/2,'a': 440, 'a#': 466.16, 'b': 493.88, 'c': 523.25, 'c#': 554.37, 'd': 587.33, 'd#': 622.25, 'e': 659.25}
+freq = {'f': 698.46/4, 'f#': 739.99/4, 'g': 783.99/4, 'g#': 830.61/4,'a': 440/2, 'a#': 466.16/2, 'b': 493.88/2, 'c': 523.25/2, 'c#': 554.37/2, 'd': 587.33/2, 'd#': 622.25/2, 'e': 659.25/2}
 intervals = [2, 2, 1, 2, 2, 2, 1]
 romans = {'i': 1, 'ii': 2, 'iii': 3, 'iv': 4, 'v': 5, 'vi': 6, 'vii': 7}
 
@@ -38,12 +38,10 @@ def majorseventh(chord):
 
 def diminished(chord):
     chord[2] = notes(notes.index(chord[2]) - 1)
-    return chord
 
 
 def augmented(chord):
     chord[2] = notes(notes.index(chord[2]) + 1)
-    return chord
 
 
 class mode:
@@ -139,12 +137,12 @@ def progression(a, b, c, d):  # gotta implement maj/min
     chords = []
     for j in reversed(list(arguments.values())):
         if str.islower(j):
-            if j in rom:
+            if j in romans:
                 chordstoplay.append(minor(gamma[romans[j] - 1]))
             if j in notes:
                 chordstoplay.append(minor(j))
         if str.isupper(j):
-            if str.lower(j) in rom:
+            if str.lower(j) in romans:
                 chordstoplay.append(major(gamma[romans[str.lower(j)] - 1]))
             if str.lower(j) in notes:
                 chordstoplay.append(major(str.lower(j)))
@@ -178,19 +176,22 @@ def playnote(note, time=1, oct=0):
     p.terminate()
 
 
-def playchord(chord,nature='major',time=1):
+def playchord(chord,times=1):
     chordtoplay=[]
-    if str.lower(nature).__contains__('maj'):
-        chordtoplay=major(chord)
-    if str.lower(nature).__contains__('min'):
+    if str.isupper(chord):
+        chordtoplay=major(str.lower(chord))
+    if str.islower(chord):
         chordtoplay=minor(chord)
-    if str.lower(nature).__contains__('sev'):
-        chordtoplay=seventh(chordtoplay)
     ind=-1
-    octave=0
-    for i in range(len(chordtoplay)):
-        print(chordtoplay[i])
-        if notes.index(chordtoplay[i])<ind: #to keep the notes moving up
-            octave=1
-        playnote(chordtoplay[i], oct=octave)
-        ind=notes.index(chordtoplay[i])
+    for k in range (times):
+        octave = 0
+        for i in range(len(chordtoplay)):
+            print(chordtoplay[i])
+            if notes.index(chordtoplay[i])<ind: #to keep the notes moving up
+                octave=1
+            playnote(chordtoplay[i], oct=octave)
+            ind=notes.index(chordtoplay[i])
+
+def playprogression(*args):
+    for v in args:
+        playchord(v)
