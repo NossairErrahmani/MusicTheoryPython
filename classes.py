@@ -1,9 +1,10 @@
 import pyaudio
 import numpy as np
 
-notes = ['f', 'f#', 'g', 'g#','a', 'a#', 'b','c', 'c#', 'd', 'd#', 'e']
-rom=['i','ii','iii','iv','v','vi','vii']
-freq = {'f': 698.46/4, 'f#': 739.99/4, 'g': 783.99/4, 'g#': 830.61/4,'a': 440/2, 'a#': 466.16/2, 'b': 493.88/2, 'c': 523.25/2, 'c#': 554.37/2, 'd': 587.33/2, 'd#': 622.25/2, 'e': 659.25/2}
+notes = ['f', 'f#', 'g', 'g#', 'a', 'a#', 'b', 'c', 'c#', 'd', 'd#', 'e']
+rom = ['i', 'ii', 'iii', 'iv', 'v', 'vi', 'vii']
+freq = {'f': 698.46 / 4, 'f#': 739.99 / 4, 'g': 783.99 / 4, 'g#': 830.61 / 4, 'a': 440 / 2, 'a#': 466.16 / 2,
+        'b': 493.88 / 2, 'c': 523.25 / 2, 'c#': 554.37 / 2, 'd': 587.33 / 2, 'd#': 622.25 / 2, 'e': 659.25 / 2}
 intervals = [2, 2, 1, 2, 2, 2, 1]
 romans = {'i': 1, 'ii': 2, 'iii': 3, 'iv': 4, 'v': 5, 'vi': 6, 'vii': 7}
 
@@ -116,11 +117,40 @@ class mode:
 
         return self.gamme
 
+    modes = {'mixolydian': mixolydian, 'lydian': lydian, 'dorian': dorian, 'ionian': ionian, 'aeolian': aeolian,
+             'locrian': locrian, 'phrygian': phrygian}
+
+    def recognizemode(self, mode):
+        if str.__contains__(mode, "mix"):
+            return self.mixolydian
+        if str.__contains__(mode, "dor"):
+            return self.dorian
+        if str.__contains__(mode, "ion"):
+            return self.ionian
+        if str.__contains__(mode, "aeo"):
+            return self.aeolian
+        if (str.__contains__(mode, "lyd") and not (str.__contains__(mode, 'mix'))):
+            return self.lydian
+        if str.__contains__(mode, "phr"):
+            return self.phrygian
+        if str.__contains__(mode, "loc"):
+            return self.locrian
+
+    def commonnotes(self, mode1, mode2):
+        a = []
+        b = []
+        m1 = self.recognizemode(mode1)
+        m2 = self.recognizemode(mode2)
+        return list(set(m1('c')) & set(m2('c')))
+
+
 def ismajor(chord):
     if chord[1] in major(chord[0]):
         return True
     else:
         return False
+
+
 def isminor(chord):
     if chord[1] in minor(chord[0]):
         return True
@@ -130,7 +160,7 @@ def isminor(chord):
 
 def progression(a, b, c, d):  # gotta implement maj/min
     arguments = locals()
-    chordstoplay=[]
+    chordstoplay = []
     min = [j for i, j in arguments.items() if str.islower(j)]
     maj = [j for i, j in arguments.items() if str.isupper(j)]
     gamma = mode().ionian('c')
@@ -149,14 +179,15 @@ def progression(a, b, c, d):  # gotta implement maj/min
     return chordstoplay
 
 
-def playnote(note, time=1, oct=0): #taken from https://stackoverflow.com/questions/8299303/generating-sine-wave-sound-in-python?fbclid=IwAR2uEmbFYe5TgwHuI8UooLbnhdLumdap7lQF_0mwF_J-O6ZJRkPo-Sbjvkc
+def playnote(note, time=1,
+             oct=0):  # taken from https://stackoverflow.com/questions/8299303/generating-sine-wave-sound-in-python?fbclid=IwAR2uEmbFYe5TgwHuI8UooLbnhdLumdap7lQF_0mwF_J-O6ZJRkPo-Sbjvkc
     p = pyaudio.PyAudio()
     print(note)
 
     volume = 0.5  # range [0.0, 1.0]
     fs = 44100  # sampling rate, Hz, must be integer
     duration = float(time)  # in seconds, may be float
-    f = (freq[str(note)])*(1+oct)  # sine frequency, Hz, may be float #possibility of playing it an octave higher
+    f = (freq[str(note)]) * (1 + oct)  # sine frequency, Hz, may be float #possibility of playing it an octave higher
 
     # generate samples, note conversion to float32 array
     samples = (np.sin(2 * np.pi * np.arange(fs * duration) * f / fs)).astype(np.float32)
@@ -176,28 +207,34 @@ def playnote(note, time=1, oct=0): #taken from https://stackoverflow.com/questio
     p.terminate()
 
 
-def playchord(chord,times=1,nature='major',fourth=0):
-    chordtoplay=[]
-    if str.__contains__(str.lower(nature),'maj'):
-        chordtoplay=major(str.lower(chord))
-    if str.__contains__(str.lower(nature),'min'):
-        chordtoplay=minor(chord)
-    if fourth: #adding the root on top
+def playchord(chord, times=1, nature='major', fourth=0):
+    chordtoplay = []
+    if str.__contains__(str.lower(nature), 'maj'):
+        chordtoplay = major(str.lower(chord))
+    if str.__contains__(str.lower(nature), 'min'):
+        chordtoplay = minor(chord)
+    if fourth:  # adding the root on top
         chordtoplay.append(chordtoplay[0])
-    ind=-1
-    for k in range (times):
+    ind = -1
+    for k in range(times):
         octave = 0
         for i in range(len(chordtoplay)):
             print(chordtoplay[i])
-            if notes.index(chordtoplay[i])<ind: #to keep the notes moving up
-                octave=1
+            if notes.index(chordtoplay[i]) < ind:  # to keep the notes moving up
+                octave = 1
             playnote(chordtoplay[i], oct=octave)
-            ind=notes.index(chordtoplay[i])
+            ind = notes.index(chordtoplay[i])
+
 
 def playprogression(*args):
-    f=args[0]
+    f = args[0]
     for v in args[1:]:
         if str.isupper(v):
-            playchord(v,1,nature='major',fourth=f)
+            playchord(v, 1, nature='major', fourth=f)
         if str.islower(v):
-            playchord(v,1,nature='minor',fourth=f)
+            playchord(v, 1, nature='minor', fourth=f)
+
+
+def playmelody(*args):
+    for note in args:
+        playnote(notes[note % len(notes)], 1, int(note / len(notes)))
