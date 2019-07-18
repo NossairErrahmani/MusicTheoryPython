@@ -223,7 +223,6 @@ def playchord(chord, times=1, nature='major', fourth=0):
     for k in range(times):
         octave = 0
         for i in range(len(chordtoplay)):
-            print(chordtoplay[i])
             if notes.index(chordtoplay[i]) < ind:  # to keep the notes moving up
                 octave = 1
             playnote(chordtoplay[i], oct=octave)
