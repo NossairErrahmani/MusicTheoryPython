@@ -183,8 +183,7 @@ def progression(a, b, c, d):  # gotta implement maj/min
     return chordstoplay
 
 
-def playnote(note, time=1,
-             oct=0):  # taken from https://stackoverflow.com/questions/8299303/generating-sine-wave-sound-in-python?fbclid=IwAR2uEmbFYe5TgwHuI8UooLbnhdLumdap7lQF_0mwF_J-O6ZJRkPo-Sbjvkc
+def playnote(note, time=1,oct=0):  # taken from https://stackoverflow.com/questions/8299303/generating-sine-wave-sound-in-python?fbclid=IwAR2uEmbFYe5TgwHuI8UooLbnhdLumdap7lQF_0mwF_J-O6ZJRkPo-Sbjvkc
     p = pyaudio.PyAudio()
     print(note)
 
