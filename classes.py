@@ -9,6 +9,8 @@ intervals = [2, 2, 1, 2, 2, 2, 1]
 romans = {'i': 1, 'ii': 2, 'iii': 3, 'iv': 4, 'v': 5, 'vi': 6, 'vii': 7}
 
 
+
+
 class note:
     def __init__(self, name):
         self.name = str(name)
@@ -141,8 +143,8 @@ class mode:
         b = []
         m1 = self.recognizemode(mode1)
         m2 = self.recognizemode(mode2)
-        return list(set(m1('c')) & set(m2('c')))
-
+        k=list(set(m1('c')) & set(m2('c')))
+        return k
 
 def ismajor(chord):
     if chord[1] in major(chord[0]):
@@ -238,3 +240,22 @@ def playprogression(*args):
 def playmelody(*args):
     for note in args:
         playnote(notes[note % len(notes)], 1, int(note / len(notes)))
+
+allchords={}
+for i in notes:
+    new={tuple(major(i)):str.upper(i),tuple(minor(i)):str.lower(i)}
+    allchords.update(new)
+
+def identifychord(*args):
+    chords=[]
+    for i in allchords.keys():
+        count=0
+        for t in args:
+            if t in i:
+                count+=1
+        if count==len(args):
+            chords.append(i)
+    results=[]
+    for i in chords:
+        results.append(allchords[i])
+    return results
