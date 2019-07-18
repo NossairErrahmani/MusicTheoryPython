@@ -40,11 +40,13 @@ def majorseventh(chord):
 
 
 def diminished(chord):
-    chord[2] = notes(notes.index(chord[2]) - 1)
+    chord[2] = notes[(notes.index(chord[2]) - 1)%len(notes)]
+    return chord
 
 
 def augmented(chord):
-    chord[2] = notes(notes.index(chord[2]) + 1)
+    chord[2] = notes[(notes.index(chord[2]) + 1)%len(notes)]
+    return chord
 
 
 class mode:
@@ -243,7 +245,7 @@ def playmelody(*args):
 
 allchords={}
 for i in notes:
-    new={tuple(major(i)):str.upper(i),tuple(minor(i)):str.lower(i)}
+    new={tuple(major(i)):str.upper(i),tuple(minor(i)):str.lower(i),tuple(diminished(major(i))):str.upper(i)+'dim',tuple(diminished(minor(i))):str.lower(i)+'dim',tuple(augmented(major(i))):str.upper(i)+'aug',tuple(augmented(minor(i))):str.lower(i)+'aug'}
     allchords.update(new)
 
 def identifychord(*args):
@@ -259,3 +261,13 @@ def identifychord(*args):
     for i in chords:
         results.append(allchords[i])
     return results
+
+def chordsfromscale(scale):
+    chords=[]
+    for i in range(len(scale)):
+        chord=[]
+        chord.append(scale[i])
+        chord.append(scale[(i+2)%len(scale)])
+        chord.append(scale[(i+4)%len(scale)])
+        chords.append(allchords[tuple(chord)])
+    return chords
