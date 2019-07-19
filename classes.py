@@ -8,10 +8,9 @@ freq = {'f': 698.46 / 4, 'f#': 739.99 / 4, 'g': 783.99 / 4, 'g#': 830.61 / 4, 'a
         'b': 493.88 / 2, 'c': 523.25 / 2, 'c#': 554.37 / 2, 'd': 587.33 / 2, 'd#': 622.25 / 2, 'e': 659.25 / 2}
 intervals = [2, 2, 1, 2, 2, 2, 1]
 romans = {'i': 1, 'ii': 2, 'iii': 3, 'iv': 4, 'v': 5, 'vi': 6, 'vii': 7}
-tonic=[1,3,6]
-subdom=[2,4]
-dom=[5,7]
-
+tonic = [1, 3, 6]
+subdom = [2, 4]
+dom = [5, 7]
 
 
 class note:
@@ -21,26 +20,26 @@ class note:
 
 
 def powerchord(note):
-    if len(note)==4:
-        note=note[0]
-    if len(note)==5:
-        note=note[0:1]
+    if len(note) == 4:
+        note = note[0]
+    if len(note) == 5:
+        note = note[0:1]
     return [note, notes[(notes.index(note) + 7) % len(notes)]]
 
 
 def major(note):
-    if len(note)==4:
-        note=note[0]
-    if len(note)==5:
-        note=note[0:1]
+    if len(note) == 4:
+        note = note[0]
+    if len(note) == 5:
+        note = note[0:1]
     return [note, notes[(notes.index(note) + 4) % len(notes)], notes[(notes.index(note) + 7) % len(notes)]]
 
 
 def minor(note):
-    if len(note)==4:
-        note=note[0]
-    if len(note)==5:
-        note=note[0:1]
+    if len(note) == 4:
+        note = note[0]
+    if len(note) == 5:
+        note = note[0:1]
     return [note, notes[(notes.index(note) + 3) % len(notes)], notes[(notes.index(note) + 7) % len(notes)]]
 
 
@@ -55,12 +54,12 @@ def majorseventh(chord):
 
 
 def diminished(chord):
-    chord[2] = notes[(notes.index(chord[2]) - 1)%len(notes)]
+    chord[2] = notes[(notes.index(chord[2]) - 1) % len(notes)]
     return chord
 
 
 def augmented(chord):
-    chord[2] = notes[(notes.index(chord[2]) + 1)%len(notes)]
+    chord[2] = notes[(notes.index(chord[2]) + 1) % len(notes)]
     return chord
 
 
@@ -160,8 +159,9 @@ class mode:
         b = []
         m1 = self.recognizemode(mode1)
         m2 = self.recognizemode(mode2)
-        k=list(set(m1('c')) & set(m2('c')))
+        k = list(set(m1('c')) & set(m2('c')))
         return k
+
 
 def ismajor(chord):
     if chord[1] in major(chord[0]):
@@ -198,7 +198,8 @@ def progression(a, b, c, d):  # gotta implement maj/min
     return chordstoplay
 
 
-def playnote(note, time=1,oct=0):  # taken from https://stackoverflow.com/questions/8299303/generating-sine-wave-sound-in-python?fbclid=IwAR2uEmbFYe5TgwHuI8UooLbnhdLumdap7lQF_0mwF_J-O6ZJRkPo-Sbjvkc
+def playnote(note, time=1,
+             oct=0):  # taken from https://stackoverflow.com/questions/8299303/generating-sine-wave-sound-in-python?fbclid=IwAR2uEmbFYe5TgwHuI8UooLbnhdLumdap7lQF_0mwF_J-O6ZJRkPo-Sbjvkc
     p = pyaudio.PyAudio()
     print(note)
 
@@ -229,7 +230,7 @@ def playchord(chord, times=1, nature='major', fourth=0):
     chordtoplay = []
     if str.__contains__(str.lower(nature), 'maj'):
         chordtoplay = major(str.lower(chord[0]))
-    if (str.__contains__(str.lower(nature), 'min') and not(str.__contains__(str.lower(nature),'dim'))):
+    if (str.__contains__(str.lower(nature), 'min') and not (str.__contains__(str.lower(nature), 'dim'))):
         chordtoplay = minor(chord[0])
     if str.__contains__(str.lower(nature), 'aug'):
         chordtoplay = augmented(chordtoplay)
@@ -247,7 +248,7 @@ def playchord(chord, times=1, nature='major', fourth=0):
             ind = notes.index(chordtoplay[i])
 
 
-def playprogression(liste,f=1):
+def playprogression(liste, f=1):
     for v in liste:
         if str.isupper(v):
             playchord(str.lower(v), 1, nature='major', fourth=f)
@@ -257,68 +258,75 @@ def playprogression(liste,f=1):
 
 def playmelody(*args):
     for note in args:
-        playnote(notes[(note + 6) % len(notes)], 1, int((note+6) / len(notes)))
+        playnote(notes[(note + 6) % len(notes)], 1, int((note + 6) / len(notes)))
 
-allchords={}
+
+allchords = {}
 for i in notes:
-    new={tuple(major(i)):str.upper(i),tuple(minor(i)):str.lower(i),tuple(diminished(major(i))):str.upper(i)+'dim',tuple(diminished(minor(i))):str.lower(i)+'dim',tuple(augmented(major(i))):str.upper(i)+'aug',tuple(augmented(minor(i))):str.lower(i)+'aug'}
+    new = {tuple(major(i)): str.upper(i), tuple(minor(i)): str.lower(i),
+           tuple(diminished(major(i))): str.upper(i) + 'dim', tuple(diminished(minor(i))): str.lower(i) + 'dim',
+           tuple(augmented(major(i))): str.upper(i) + 'aug', tuple(augmented(minor(i))): str.lower(i) + 'aug'}
     allchords.update(new)
 
+
 def identifychord(*args):
-    chords=[]
+    chords = []
     for i in allchords.keys():
-        count=0
+        count = 0
         for t in args:
             if t in i:
-                count+=1
-        if count==len(args):
+                count += 1
+        if count == len(args):
             chords.append(i)
-    results=[]
+    results = []
     for i in chords:
         results.append(allchords[i])
     return results
 
+
 def chordsfromscale(scale):
-    chords=[]
+    chords = []
     for i in range(len(scale)):
-        chord=[]
+        chord = []
         chord.append(scale[i])
-        chord.append(scale[(i+2)%len(scale)])
-        chord.append(scale[(i+4)%len(scale)])
+        chord.append(scale[(i + 2) % len(scale)])
+        chord.append(scale[(i + 4) % len(scale)])
         chords.append(allchords[tuple(chord)])
     return chords
 
+
 def semirandomprogression(modetoplay):
-    chords=[]
-    gamme=mode().recognizemode(modetoplay)()
-    chordsavailable=chordsfromscale(gamme)
-    r = random.choice(list(set().union(tonic,subdom)))
-    for i in range (4):
-        print(str(i)+' and the chord is '+str(r))
+    chords = []
+    gamme = mode().recognizemode(modetoplay)()
+    chordsavailable = chordsfromscale(gamme)
+    r = random.choice(list(set().union(tonic, subdom)))
+    for i in range(4):
+        print(str(i) + ' and the chord is ' + str(r))
         if r in tonic:
             print('ton')
-            chords.append(chordsavailable[r-1])
+            chords.append(chordsavailable[r - 1])
             r = random.randint(1, len(chordsavailable))
             continue
         if r in subdom:
             print('sub')
-            chords.append(chordsavailable[r-1])
-            r= random.choice(dom)
+            chords.append(chordsavailable[r - 1])
+            r = random.choice(dom)
             continue
         if r in dom:
             print('dom')
-            chords.append(chordsavailable[r-1])
+            chords.append(chordsavailable[r - 1])
             r = random.choice(tonic)
             continue
 
     return chords
 
+
 def randomprogression(modetoplay):
-    chords=[]
-    gamme=mode().recognizemode(modetoplay)('c#')
-    chordsavailable=chordsfromscale(gamme)
-    for i in range (4):
+    chords = []
+    gamme = mode().recognizemode(modetoplay)('c#')
+    chordsavailable = chordsfromscale(gamme)
+    for i in range(4):
         r = random.randint(1, len(chordsavailable))
-        chords.append(chordsavailable[r-1])
+        chords.append(chordsavailable[r - 1])
     print(chords)
     return chords
