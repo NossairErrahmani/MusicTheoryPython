@@ -1,5 +1,6 @@
 import pyaudio
 import numpy as np
+import random
 
 notes = ['f', 'f#', 'g', 'g#', 'a', 'a#', 'b', 'c', 'c#', 'd', 'd#', 'e']
 rom = ['i', 'ii', 'iii', 'iv', 'v', 'vi', 'vii']
@@ -7,7 +8,9 @@ freq = {'f': 698.46 / 4, 'f#': 739.99 / 4, 'g': 783.99 / 4, 'g#': 830.61 / 4, 'a
         'b': 493.88 / 2, 'c': 523.25 / 2, 'c#': 554.37 / 2, 'd': 587.33 / 2, 'd#': 622.25 / 2, 'e': 659.25 / 2}
 intervals = [2, 2, 1, 2, 2, 2, 1]
 romans = {'i': 1, 'ii': 2, 'iii': 3, 'iv': 4, 'v': 5, 'vi': 6, 'vii': 7}
-
+tonic=[1,3,6]
+subdom=[2,4]
+dom=[5,7]
 
 
 
@@ -18,14 +21,26 @@ class note:
 
 
 def powerchord(note):
+    if len(note)==4:
+        note=note[0]
+    if len(note)==5:
+        note=note[0:1]
     return [note, notes[(notes.index(note) + 7) % len(notes)]]
 
 
 def major(note):
+    if len(note)==4:
+        note=note[0]
+    if len(note)==5:
+        note=note[0:1]
     return [note, notes[(notes.index(note) + 4) % len(notes)], notes[(notes.index(note) + 7) % len(notes)]]
 
 
 def minor(note):
+    if len(note)==4:
+        note=note[0]
+    if len(note)==5:
+        note=note[0:1]
     return [note, notes[(notes.index(note) + 3) % len(notes)], notes[(notes.index(note) + 7) % len(notes)]]
 
 
@@ -52,7 +67,7 @@ def augmented(chord):
 class mode:
     gamme = []
 
-    def ionian(self, key):
+    def ionian(self, key='c'):
         self.gamme = []
         self.gamme.append(key)
         note = key
@@ -62,7 +77,7 @@ class mode:
 
         return self.gamme
 
-    def dorian(self, key):
+    def dorian(self, key='c'):
         self.gamme = []
         self.gamme.append(key)
         note = key
@@ -72,7 +87,7 @@ class mode:
 
         return self.gamme
 
-    def phrygian(self, key):
+    def phrygian(self, key='c'):
         self.gamme = []
         self.gamme.append(key)
         note = key
@@ -82,7 +97,7 @@ class mode:
 
         return self.gamme
 
-    def lydian(self, key):
+    def lydian(self, key='c'):
         self.gamme = []
         self.gamme.append(key)
         note = key
@@ -92,7 +107,7 @@ class mode:
 
         return self.gamme
 
-    def mixolydian(self, key):
+    def mixolydian(self, key='c'):
         self.gamme = []
         self.gamme.append(key)
         note = key
@@ -102,7 +117,7 @@ class mode:
 
         return self.gamme
 
-    def aeolian(self, key):
+    def aeolian(self, key='c'):
         self.gamme = []
         self.gamme.append(key)
         note = key
@@ -111,7 +126,7 @@ class mode:
             self.gamme.append(note)
         return self.gamme
 
-    def locrian(self, key):
+    def locrian(self, key='c'):
         self.gamme = []
         self.gamme.append(key)
         note = key
@@ -213,9 +228,13 @@ def playnote(note, time=1,oct=0):  # taken from https://stackoverflow.com/questi
 def playchord(chord, times=1, nature='major', fourth=0):
     chordtoplay = []
     if str.__contains__(str.lower(nature), 'maj'):
-        chordtoplay = major(str.lower(chord))
-    if str.__contains__(str.lower(nature), 'min'):
-        chordtoplay = minor(chord)
+        chordtoplay = major(str.lower(chord[0]))
+    if (str.__contains__(str.lower(nature), 'min') and not(str.__contains__(str.lower(nature),'dim'))):
+        chordtoplay = minor(chord[0])
+    if str.__contains__(str.lower(nature), 'aug'):
+        chordtoplay = augmented(chordtoplay)
+    if str.__contains__(str.lower(nature), 'dim'):
+        chordtoplay = diminished(chordtoplay)
     if fourth:  # adding the root on top
         chordtoplay.append(chordtoplay[0])
     ind = -1
@@ -228,9 +247,8 @@ def playchord(chord, times=1, nature='major', fourth=0):
             ind = notes.index(chordtoplay[i])
 
 
-def playprogression(*args):
-    f = args[0]
-    for v in args[1:]:
+def playprogression(liste,f=1):
+    for v in liste:
         if str.isupper(v):
             playchord(v, 1, nature='major', fourth=f)
         if str.islower(v):
@@ -268,4 +286,39 @@ def chordsfromscale(scale):
         chord.append(scale[(i+2)%len(scale)])
         chord.append(scale[(i+4)%len(scale)])
         chords.append(allchords[tuple(chord)])
+    return chords
+
+def semirandomprogression(modetoplay):
+    chords=[]
+    gamme=mode().recognizemode(modetoplay)()
+    chordsavailable=chordsfromscale(gamme)
+    r = random.choice(list(set().union(tonic,subdom)))
+    for i in range (4):
+        print(str(i)+' and the chord is '+str(r))
+        if r in tonic:
+            print('ton')
+            chords.append(chordsavailable[r-1])
+            r = random.randint(1, len(chordsavailable))
+            continue
+        if r in subdom:
+            print('sub')
+            chords.append(chordsavailable[r-1])
+            r= random.choice(dom)
+            continue
+        if r in dom:
+            print('dom')
+            chords.append(chordsavailable[r-1])
+            r = random.choice(tonic)
+            continue
+
+    return chords
+
+def randomprogression(modetoplay):
+    chords=[]
+    gamme=mode().recognizemode(modetoplay)('c#')
+    chordsavailable=chordsfromscale(gamme)
+    for i in range (4):
+        r = random.randint(1, len(chordsavailable))
+        chords.append(chordsavailable[r-1])
+    print(chords)
     return chords
