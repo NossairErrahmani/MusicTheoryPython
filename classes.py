@@ -229,9 +229,9 @@ def playnote(note, time=1,
 def playchord(chord, times=1, nature='major', fourth=0):
     chordtoplay = []
     if str.__contains__(str.lower(nature), 'maj'):
-        chordtoplay = major(str.lower(chord[0]))
+        chordtoplay = major(str.lower(chord))
     if (str.__contains__(str.lower(nature), 'min') and not (str.__contains__(str.lower(nature), 'dim'))):
-        chordtoplay = minor(chord[0])
+        chordtoplay = minor(chord)
     if str.__contains__(str.lower(nature), 'aug'):
         chordtoplay = augmented(chordtoplay)
     if str.__contains__(str.lower(nature), 'dim'):
@@ -248,8 +248,8 @@ def playchord(chord, times=1, nature='major', fourth=0):
             ind = notes.index(chordtoplay[i])
 
 
-def playprogression(liste, f=1):
-    for v in liste:
+def playprogression(prog, f=1):
+    for v in prog.split(","):
         if str.isupper(v):
             playchord(str.lower(v), 1, nature='major', fourth=f)
         if str.islower(v):
