@@ -250,14 +250,14 @@ def playchord(chord, times=1, nature='major', fourth=0):
 def playprogression(liste,f=1):
     for v in liste:
         if str.isupper(v):
-            playchord(v, 1, nature='major', fourth=f)
+            playchord(str.lower(v), 1, nature='major', fourth=f)
         if str.islower(v):
             playchord(v, 1, nature='minor', fourth=f)
 
 
 def playmelody(*args):
     for note in args:
-        playnote(notes[note % len(notes)], 1, int(note / len(notes)))
+        playnote(notes[(note + 6) % len(notes)], 1, int((note+6) / len(notes)))
 
 allchords={}
 for i in notes:
